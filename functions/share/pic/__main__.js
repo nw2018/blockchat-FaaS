@@ -1,5 +1,5 @@
 let atob = require('atob');
-const lib = require('lib')({token: process.env.STDLIB_LIBRARY_TOKEN})
+const lib = require('lib')({token: process.env.STDLIB_LIBRARY_TOKEN});
 let md5 = require("crypto").createHash('md5');
 
 function validateRoom() {
@@ -54,31 +54,36 @@ module.exports = (roomID, picBase64, callback) => {
         callback(new Error("invalid room id"));
     }
 
-    base64Decode(picBase64)
-    .catch(err => {
-        // callback(err)
-        callback(new Error("invalid base64 string"));
-    })
-    .then(pic => {
-        // if (pic.length < process.env.MAX_PIC_SIZE_TO_MSCV){
-        //     return lookUpMSCV(pic);
-        // }
-        return {}
-    })
-    .catch(err => {
-        // callback(null, {
-        //     success: true,
-        //     message: "failed to request MSCV"
-        // })
-        callback(err);
-    })
+    // base64Decode(picBase64)
+    // .catch(err => {
+    //     // callback(err)
+    //     callback(new Error("invalid base64 string"));
+    // })
+    // .then(pic => {
+    //     // if (pic.length < process.env.MAX_PIC_SIZE_TO_MSCV){
+    //     //     return lookUpMSCV(pic);
+    //     // }
+    //     return {};
+    // })
+    // .catch(err => {
+    //     // callback(null, {
+    //     //     success: true,
+    //     //     message: "failed to request MSCV"
+    //     // })
+    //     callback(err);
+    // })
 
 
     genPicID(picBase64)
     .then(picID => {
-        return Promise.resolve(lib.utils.storage.set(picID, picBase64))
+        let picInfo = {
+            data: picBase64
+        };
+        return Promise.resolve(
+            lib.utils.storage.set(picID, JSON.stringify(picInfo))
+        )
         .then(() => {
-            return picID
+            return picID;
         })
     })
     .then((picID) => {

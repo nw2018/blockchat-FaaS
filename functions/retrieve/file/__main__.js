@@ -1,16 +1,18 @@
-const lib = require('lib')({token: process.env.STDLIB_LIBRARY_TOKEN})
+const lib = require('lib')({token: process.env.STDLIB_LIBRARY_TOKEN});
+let btoa = require('btoa');
 
 /**
 * get storage 
 * @param {string} key
-* @returns {buffer}
+* @returns {string}
 */
 module.exports = (key, callback) => {
     lib.utils.storage.get(key)
     .then(value => {
-        callback(null, {"_base64": value}, {"Content-Type":"image/jpeg"})
+        let picInfo = JSON.parse(value);
+        callback(null, "data:image/png;base64,"+picInfo.data);
     })
     .catch(err => {
-        callback(err)
+        callback(err);
     })
 };
