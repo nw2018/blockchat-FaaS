@@ -70,27 +70,22 @@ module.exports = (roomID, picBase64, callback) => {
     }
 
     let pidID = null;
-    let picInfo = {
-        data: picBase64
-    };
 
     genPictureID(picBase64)
     .then(id => {
-        picID = id;
-        return lookUpMSCV(id);
+        pidID = id;
+        return lib.utils.storage.set(pidID, picBase64);
     })
-    .then(response => {
-        picInfo.description = parseDescription(response.description.tags, response.description.captions)
-        return lib.utils.storage.set(picID, JSON.stringify(picInfo))
-    })
-    .catch(err => {})
     .then(() => {
-        callback(null, 
-            {
-                success: true,
-                data: picID,
-            }
-        );
+        return lookUpMSCV(pidID)
+    })
+    .then((response) => {
+        callback(null, {
+            description: parseDescription(response.description.tags, response.description.captions)
+        })
+    })
+    .catch(err => {
+        callback(err);
     })
 };
   

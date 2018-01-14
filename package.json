@@ -9,7 +9,7 @@
     "request": "^2.34",
     "request-promise": "^4.2.2"
   },
-  "private": true,
+  "private": false,
   "stdlib": {
     "build": "faaslang",
     "name": "BlockChat/blockchat",

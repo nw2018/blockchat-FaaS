@@ -8,12 +8,10 @@ const lib = require('lib')({token: process.env.STDLIB_LIBRARY_TOKEN});
 module.exports = (key, callback) => {
     lib.utils.storage.get(key)
     .then(value => {
-        let picInfo = JSON.parse(value);
         callback(null, {
             success: true,
-            data: picInfo.data,
-            description: picInfo.description
-        });
+            data: value
+        })
     })
     .catch(err => {
         callback(err);
