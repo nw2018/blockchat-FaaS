@@ -1,13 +1,12 @@
 let rp = require('request-promise')
 
-function recognizeSentiment(content, language) {
+function recognizeLanguageType(content) {
     let options = {
         method: 'POST',
-        uri: process.env.MS_COGNITIVE_TXT_ADDR + "sentiment",
+        uri: process.env.MS_COGNITIVE_TXT_ADDR + "languages",
         body: {
             "documents": [
                 {
-                  "language": language,
                   "id": 1,
                   "text": content
                 }
@@ -22,17 +21,14 @@ function recognizeSentiment(content, language) {
 }
 
 /**
-* detect sentiment of given text 
+* detect language type of given text
 * @param {string} text 
-* @param {string} language
 * @returns {object}
 */
-module.exports = (text, language = 'en', callback) => {
-   recognizeSentiment(text, language)
+module.exports = (text, callback) => {
+   recognizeLanguageType(text)
    .then(response => {
-        callback(null, {
-           score: response.documents[0].score
-        })
+        callback(null,response)
    })
    .catch(err => {
        callback(err)
