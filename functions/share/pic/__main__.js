@@ -1,6 +1,6 @@
-let axios = require('axios')
-let atob = require('atob')
-let FormData = require('form-data');
+let atob = require('atob');
+const lib = require('lib')({token: process.env.STDLIB_LIBRARY_TOKEN})
+let md5 = require("crypto").createHash('md5');
 
 function validateRoom() {
     return true;
@@ -8,23 +8,23 @@ function validateRoom() {
 
 function base64Decode(base64Str) {
     return new Promise(resolve => {
-        resolve(pic = atob(base64Str))
+        resolve(atob(base64Str));
     })
 } 
 
 function lookUpMSCV (pic, params = {visualFeatures:["Categories"]}) {
-    let url = process.env.MSCV_ADDR
-    let i = 0
+    let url = process.env.MSCV_ADDR;
+    let i = 0;
     Object.entries(params).forEach(([key, value]) => {
-        if (i == 0) {
-            url += "?" + key + "="
+        if (i === 0) {
+            url += "?" + key + "=";
         }
         else{
-            url += "&" + key + "="
+            url += "&" + key + "=";
         }
         i++;
-        for (var j = 0; j < value.length; j++) {
-            url += value[j]
+        for (let j = 0; j < value.length; j++) {
+            url += value[j];
         }
     });
     
@@ -37,8 +37,10 @@ function lookUpMSCV (pic, params = {visualFeatures:["Categories"]}) {
     });
 }
 
-function genPicID (pic) {
-
+function genPicID (picBase64) {
+    return new Promise(resolve => {
+        resolve(md5.update(picBase64).digest("hex"));
+    })
 }
 
 /**
@@ -49,35 +51,43 @@ function genPicID (pic) {
 */
 module.exports = (roomID, picBase64, callback) => {
     if (!validateRoom(roomID)){
-        callback(new Error("invalid room id"))
+        callback(new Error("invalid room id"));
     }
 
     base64Decode(picBase64)
     .catch(err => {
         // callback(err)
-        callback(new Error("invalid base64 string"))
+        callback(new Error("invalid base64 string"));
     })
     .then(pic => {
-        callback(null, pic.toString('binary'))
-        if (pic.length < process.env.MAX_PIC_SIZE_TO_MSCV){
-            return lookUpMSCV(pic)
-        }
-    })
-    .then((response) => {
-        callback(null, 
-            {
-                success: true,
-                message: response 
-            }
-        )
+        // if (pic.length < process.env.MAX_PIC_SIZE_TO_MSCV){
+        //     return lookUpMSCV(pic);
+        // }
+        return {}
     })
     .catch(err => {
         // callback(null, {
         //     success: true,
         //     message: "failed to request MSCV"
         // })
-        callback(err)
+        callback(err);
     })
 
+
+    genPicID(picBase64)
+    .then(picID => {
+        return Promise.resolve(lib.utils.storage.set(picID, picBase64))
+        .then(() => {
+            return picID
+        })
+    })
+    .then((picID) => {
+        callback(null, 
+            {
+                success: true,
+                data: picID
+            }
+        );
+    })
 };
   

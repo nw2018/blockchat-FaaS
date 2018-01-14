@@ -11,7 +11,7 @@ module.exports = (key, callback) => {
     .then(value => {
         callback(null, {
             success: true,
-            message: value
+            data: value
         })
     })
     .catch(err => {
