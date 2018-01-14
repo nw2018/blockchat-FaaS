@@ -1,20 +1,20 @@
 let rp = require('request-promise')
 
-function recognizeSentiment(content, language) {
+//https://speech.googleapis.com/v1/speech:recognize?key=YOUR_API_KEY
+function recognizeSpeech(content, language="en-US") {
     let options = {
         method: 'POST',
-        uri: process.env.MS_COGNITIVE_TXT_ADDR + "sentiment",
+        uri: process.env.GOOGLE_SPEECHRECOG_ADDR,
         body: {
-            "documents": [
-                {
-                  "language": language,
-                  "id": 1,
-                  "text": content
-                }
-            ]
-        },
-        headers: {
-            "Ocp-Apim-Subscription-Key": process.env.MS_COGNITIVE_TXT_KEY
+          "config": {
+            "encoding": "LINEAR16",
+            "sampleRateHertz": 16000,
+            "languageCode": language,
+            "enableWordTimeOffsets": false
+          },
+          "audio": {
+            "content": content
+          }
         },
         json: true // Automatically stringifies the body to JSON
     }
@@ -23,16 +23,14 @@ function recognizeSentiment(content, language) {
 
 /**
 * detect sentiment of given text 
-* @param {string} text 
+* @param {string} audio 
 * @param {string} language
 * @returns {object}
 */
-module.exports = (text, language = 'en', callback) => {
-   recognizeSentiment(text, language)
+module.exports = (audio, language = 'en', callback) => {
+   recognizeSpeech(audio, language)
    .then(response => {
-        callback(null, {
-           score: response.documents[0].score
-        })
+        callback(null, response)
    })
    .catch(err => {
        callback(err)
