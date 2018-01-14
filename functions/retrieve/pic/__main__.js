@@ -1,6 +1,5 @@
 const lib = require('lib')({token: process.env.STDLIB_LIBRARY_TOKEN})
 
-
 /**
 * get storage 
 * @param {string} key

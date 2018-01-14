@@ -13,7 +13,7 @@ function base64Decode(base64Str) {
 } 
 
 function lookUpMSCV (pic, params = {visualFeatures:["Categories"]}) {
-    let url = process.env.MSCV_ADDR;
+    let url = process.env.MS_COGNITIVE_IMG_ADDR;
     let i = 0;
     Object.entries(params).forEach(([key, value]) => {
         if (i === 0) {
@@ -32,7 +32,7 @@ function lookUpMSCV (pic, params = {visualFeatures:["Categories"]}) {
         headers: {
         //   'Content-Disposition': 'attachment; filename="picture.jpg"',
           'Content-Type': 'image/jpeg',
-          'Ocp-Apim-Subscription-Key': process.env.MSCV_KEY
+          'Ocp-Apim-Subscription-Key': process.env.MS_COGNITIVE_IMG_KEY
         }
     });
 }
