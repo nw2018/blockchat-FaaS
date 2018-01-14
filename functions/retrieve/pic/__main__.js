@@ -1,4 +1,4 @@
-const lib = require('lib')({token: process.env.STDLIB_LIBRARY_TOKEN})
+const lib = require('lib')({token: process.env.STDLIB_LIBRARY_TOKEN});
 
 /**
 * get storage 
@@ -8,13 +8,14 @@ const lib = require('lib')({token: process.env.STDLIB_LIBRARY_TOKEN})
 module.exports = (key, callback) => {
     lib.utils.storage.get(key)
     .then(value => {
+        let picInfo = JSON.parse(value);
         callback(null, {
             success: true,
-            data: value
-        })
+            data: picInfo
+        });
     })
     .catch(err => {
-        callback(err)
+        callback(err);
     })
 };
   
