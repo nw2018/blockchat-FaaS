@@ -11,7 +11,8 @@ module.exports = (key, callback) => {
         let picInfo = JSON.parse(value);
         callback(null, {
             success: true,
-            data: picInfo
+            data: picInfo.data,
+            description: picInfo.description
         });
     })
     .catch(err => {
