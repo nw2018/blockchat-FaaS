@@ -1,5 +1,5 @@
 const lib = require('lib')({token: process.env.STDLIB_LIBRARY_TOKEN});
-let md5 = require("crypto").createHash('md5');
+let crpyto = require("crypto")
 let request = require('request-promise')
 
 function validateRoom() {
@@ -39,7 +39,7 @@ function lookUpMSCV (picID , params = {}) {
 
 function genPictureID (picBase64) {
     return new Promise(resolve => {
-        resolve(md5.update(picBase64).digest("hex"));
+        resolve(crpyto.createHash('md5').update(picBase64).digest("hex"));
     })
 }
 
