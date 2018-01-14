@@ -1,3 +1,6 @@
+let axios = require('axios')
+let atob = require('atob')
+let FormData = require('form-data');
 
 function validateRoom() {
     return true;
@@ -9,12 +12,33 @@ function base64Decode(base64Str) {
     })
 } 
 
-function genPicID (pic) {
-
+function lookUpMSCV (pic, params = {visualFeatures:["Categories"]}) {
+    let url = process.env.MSCV_ADDR
+    let i = 0
+    Object.entries(params).forEach(([key, value]) => {
+        if (i == 0) {
+            url += "?" + key + "="
+        }
+        else{
+            url += "&" + key + "="
+        }
+        i++;
+        for (var j = 0; j < value.length; j++) {
+            url += value[j]
+        }
+    });
+    
+    return axios.post(url, pic.toString('bianry'), {
+        headers: {
+        //   'Content-Disposition': 'attachment; filename="picture.jpg"',
+          'Content-Type': 'image/jpeg',
+          'Ocp-Apim-Subscription-Key': process.env.MSCV_KEY
+        }
+    });
 }
 
-function lookUpMSCV (pic) {
-    
+function genPicID (pic) {
+
 }
 
 /**
@@ -29,18 +53,31 @@ module.exports = (roomID, picBase64, callback) => {
     }
 
     base64Decode(picBase64)
-    .then(pic => {
-        if (pic.size < MAX_PIC_SIZE_TO_MSCV){
-            callback(null, 
-                {
-                    success: true,
-                    message: "pic size < 4mb"
-                }
-            )
-        }
-    })
     .catch(err => {
+        // callback(err)
         callback(new Error("invalid base64 string"))
     })
+    .then(pic => {
+        callback(null, pic.toString('binary'))
+        if (pic.length < process.env.MAX_PIC_SIZE_TO_MSCV){
+            return lookUpMSCV(pic)
+        }
+    })
+    .then((response) => {
+        callback(null, 
+            {
+                success: true,
+                message: response 
+            }
+        )
+    })
+    .catch(err => {
+        // callback(null, {
+        //     success: true,
+        //     message: "failed to request MSCV"
+        // })
+        callback(err)
+    })
+
 };
   
