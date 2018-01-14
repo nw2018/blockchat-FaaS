@@ -28,7 +28,10 @@ function recognizeLanguageType(content) {
 module.exports = (text, callback) => {
    recognizeLanguageType(text)
    .then(response => {
-        callback(null,response)
+        callback(null,{
+            type: response.documents[0].detectedLanguages[0].name,
+            code: response.documents[0].detectedLanguages[0].iso6391Name 
+        })
    })
    .catch(err => {
        callback(err)
